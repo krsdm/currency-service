@@ -2,6 +2,11 @@ package main
 
 import (
 	"context"
+	"net/http"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	currencyClient "github.com/vctrl/currency-service/currency/internal/clients/currency"
@@ -11,10 +16,6 @@ import (
 	"github.com/vctrl/currency-service/currency/internal/repository"
 	"github.com/vctrl/currency-service/currency/internal/service"
 	"github.com/vctrl/currency-service/pkg/currency"
-	"net/http"
-	"os/signal"
-	"syscall"
-	"time"
 
 	"flag"
 	"fmt"
@@ -77,6 +78,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error loading config: %v", err)
 	}
+	cfg.API.BaseURL = fmt.Sprintf(cfg.API.BaseURL, time.Now().UTC().Format("2006-01-02"))
 
 	db, _, err := db.NewDatabaseConnection(cfg.Database)
 	if err != nil {
@@ -102,7 +104,7 @@ func main() {
 
 	// todo apply middleware
 
-	currencyServer := handler.NewCurrencyServer(svc,
+	currencyServer := handler.NewCurrencyServer(&svc,
 		logger,
 		requestCount,
 		requestDuration,
@@ -116,6 +118,14 @@ func main() {
 	}()
 
 	go func() {
+		http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+			_, err := fmt.Fprintf(w, "health is ok")
+			if err != nil {
+				log.Fatalf("Failed health check: %s", err)
+			} else {
+				log.Println("health check successful")
+			}
+		})
 		http.Handle("/metrics", promhttp.Handler())
 		log.Println("Prometheus metrics server running on :8081")
 		if err := http.ListenAndServe(":8081", nil); err != nil {

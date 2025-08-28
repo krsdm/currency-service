@@ -14,3 +14,4 @@ cli-incr.sh
 /.deploy
 assets/*.csv
 .history
+currency-local-config-dev.yaml

@@ -1,0 +1,19 @@
+service:
+  server_port: "8090"
+
+api:
+  base_url: "https://%s.currency-api.pages.dev/v1/currencies" # today date = latest
+  timeout_seconds: 10
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "admin"
+  password: "password"
+  name: "currency_db"
+
+worker:
+  schedule: "@daily"
+  currency_pair:
+    base_currency: "RUB"
+    target_currency: "USD"
