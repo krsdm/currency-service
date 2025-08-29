@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os/signal"
 	"syscall"
@@ -31,6 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error loading config: %v", err)
 	}
+	cfg.API.BaseURL = fmt.Sprintf(cfg.API.BaseURL, "latest")
 
 	db, _, err := db.NewDatabaseConnection(cfg.Database)
 	if err != nil {

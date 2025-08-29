@@ -24,11 +24,6 @@ type DatabaseConfig struct {
 	MigrationsPath string `mapstructure:"migrations_path"`
 }
 
-func (dc DatabaseConfig) ToDSN() string {
-	// todo
-	return ""
-}
-
 type WorkerConfig struct {
 	Schedule     string `mapstructure:"schedule"`
 	CurrencyPair struct {

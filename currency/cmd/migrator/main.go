@@ -25,7 +25,7 @@ func run() error {
 		return fmt.Errorf("load config: %w", err)
 	}
 
-	if err := migrations.RunPgMigrations(cfg.Database.ToDSN()); err != nil {
+	if err := migrations.RunPgMigrations(cfg.Database); err != nil {
 		return fmt.Errorf("migrate: %w", err)
 	}
 

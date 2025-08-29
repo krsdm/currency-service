@@ -78,7 +78,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error loading config: %v", err)
 	}
-	cfg.API.BaseURL = fmt.Sprintf(cfg.API.BaseURL, time.Now().UTC().Format("2006-01-02"))
+	cfg.API.BaseURL = fmt.Sprintf(cfg.API.BaseURL, "latest")
 
 	db, _, err := db.NewDatabaseConnection(cfg.Database)
 	if err != nil {
