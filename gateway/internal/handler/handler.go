@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/vctrl/currency-service/gateway/internal/service"
 
 	"go.uber.org/zap"
@@ -33,6 +34,11 @@ func RegisterRoutes(authSvc service.AuthService,
 		"/ping", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"message": "pong"})
 		},
+	)
+
+	cntrl.router.GET("/metrics", func(c *gin.Context) {
+		promhttp.Handler()
+	},
 	)
 
 	cntrl.router.GET("/api/v1/rate", cntrl.GetCurrencyRates)

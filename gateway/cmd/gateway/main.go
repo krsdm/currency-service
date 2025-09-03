@@ -122,7 +122,8 @@ func run() error {
 
 func shouldSkipAuthMiddleware(c *gin.Context) bool {
 	if strings.HasSuffix(c.Request.URL.Path, "/login") ||
-		strings.HasSuffix(c.Request.URL.Path, "/register") {
+		strings.HasSuffix(c.Request.URL.Path, "/register") ||
+		strings.HasSuffix(c.Request.URL.Path, "/metrics") {
 		return true
 	}
 
