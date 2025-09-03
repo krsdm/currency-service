@@ -111,8 +111,13 @@ func main() {
 		appUptime,
 		/*metrics*/)
 
+	grpcServer, err := NewGRPCServer(cfg, currencyServer)
+	if err != nil {
+		log.Fatalf("Error creating GRPC server: %s", err)
+	}
+
 	go func() {
-		if err := startGRPCServer(cfg, currencyServer); err != nil {
+		if err := grpcServer.Start(); err != nil {
 			log.Fatalf("Error starting GRPC server: %s", err)
 		}
 	}()
@@ -148,22 +153,39 @@ func main() {
 		}
 	}()
 
-	select {} // Блокируем main() чтобы горутины работали // todo graceful shutdown
+	// graceful shutdown
+	<-ctx.Done()
+	grpcServer.Stop()
+	log.Println("Graceful shutdown successful")
 }
 
-func startGRPCServer(cfg config.AppConfig, srv handler.CurrencyServer) error {
-	lis, err := net.Listen("tcp", ":"+cfg.Service.ServerPort)
+type GRPCServer struct {
+	server   *grpc.Server
+	listener net.Listener
+}
+
+func NewGRPCServer(cfg config.AppConfig, srv handler.CurrencyServer) (*GRPCServer, error) {
+	listener, err := net.Listen("tcp", ":"+cfg.Service.ServerPort)
 	if err != nil {
-		return fmt.Errorf("failed to listen: %w", err)
+		return nil, fmt.Errorf("failed to listen: %w", err)
 	}
 
-	s := grpc.NewServer()
-	currency.RegisterCurrencyServiceServer(s, srv)
+	server := grpc.NewServer()
+	currency.RegisterCurrencyServiceServer(server, srv)
 
-	log.Printf("gRPC server is listening on :%s", cfg.Service.ServerPort)
-	if err := s.Serve(lis); err != nil {
+	return &GRPCServer{server, listener}, nil
+}
+
+func (grpc *GRPCServer) Start() error {
+	log.Printf("gRPC server is listening on :%s", grpc.listener.Addr().String())
+	if err := grpc.server.Serve(grpc.listener); err != nil {
 		return fmt.Errorf("failed to serve: %w", err)
 	}
 
 	return nil
+}
+
+func (grpc *GRPCServer) Stop() {
+	log.Println("gRPC server is stopping")
+	grpc.server.GracefulStop()
 }

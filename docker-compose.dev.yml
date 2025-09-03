@@ -29,7 +29,7 @@ services:
         condition: service_healthy
 
   auth-generator:
-    image: andrianovartemii/gm-test-task-auth-generator:latest
+    image: artyomyatsenko/final-task-auth-generator:latest
     ports:
       - "8082:8080"
     environment:

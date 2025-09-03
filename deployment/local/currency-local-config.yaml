@@ -2,7 +2,7 @@ service:
   server_port: "8090"
 
 api:
-  base_url: "https://%s.currency-api.pages.dev/v1/currencies" # today date = latest
+  base_url: "http://%s.currency-api.pages.dev/v1/currencies" # today date = latest
   timeout_seconds: 10
 
 database:
