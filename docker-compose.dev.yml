@@ -40,10 +40,51 @@ services:
       timeout: 1s
       retries: 5
 
+  cron:
+    build:
+      context: .
+      dockerfile: ./deployment/local/Dockerfile
+      args:
+        - BUILD_TARGET=./currency/cmd/cron/main.go
+    volumes:
+      - ./deployment/local:/deployment/local  # Mount the local directory into the container
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["--config=/deployment/local/currency-local-config.yaml"]
+
+  currency:
+    build:
+      context: .
+      dockerfile: ./deployment/local/Dockerfile
+      args:
+        - BUILD_TARGET=./currency/cmd/currency/main.go
+    volumes:
+      - ./deployment/local:/deployment/local
+    ports:
+      - "8081:8081"
+      - "8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["--config=/deployment/local/currency-local-config.yaml"]
+
+  gateway:
+    build:
+      context: .
+      dockerfile: ./deployment/local/Dockerfile
+      args:
+        - BUILD_TARGET=./gateway/cmd/gateway/main.go
+    volumes:
+      - ./deployment/local:/deployment/local
+    ports:
+      - "8080:8080"
+    command: ["--config=/deployment/local/gateway-local-config.yaml"]
+
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./currency/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
@@ -66,3 +107,13 @@ services:
     image: prom/node-exporter:latest
     ports:
       - "9100:9100"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - "8083:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped

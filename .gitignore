@@ -15,3 +15,4 @@ cli-incr.sh
 assets/*.csv
 .history
 currency-local-config-dev.yaml
+/monitoring/grafana/plugins/
