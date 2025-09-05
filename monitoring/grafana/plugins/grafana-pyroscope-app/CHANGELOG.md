@@ -1,3 +1,120 @@
+# Changelog
+
+## 1.8.1
+
+
+## 1.8.0
+
+##### Chores
+
+*  Upgrade playwright to 1.55 (#576) (601ee656)
+*  Create plugin update (#564) (2ef28dc6)
+
+##### Continuous Integration
+
+*  Use shared action to create a changelog (32e56544)
+*  Update release workflow (#573) (939c7b68)
+*  Push build to ops (#570) (f42be894)
+*  Use shared workflows for publishing (#565) (96855248)
+
+# [1.7.0](https://github.com/grafana/profiles-drilldown/compare/v1.6.0...v1.7.0) (2025-07-31)
+
+
+### Features
+
+* Propagate the redirect_uri for GitHub logins ([#541](https://github.com/grafana/profiles-drilldown/issues/541)) ([d0ae06c](https://github.com/grafana/profiles-drilldown/commit/d0ae06c4a90cbfc5b6e1d1764b5ea196e3029f7d))
+* **Recording Rules:** Pass function name to recording rules ([#543](https://github.com/grafana/profiles-drilldown/issues/543)) ([9000fd4](https://github.com/grafana/profiles-drilldown/commit/9000fd4d478dbac7adb59d7d07f421be570d58ec))
+* Support for provisioned recording rules ([#549](https://github.com/grafana/profiles-drilldown/issues/549)) ([dc5fea3](https://github.com/grafana/profiles-drilldown/commit/dc5fea349e8198dce53f32e27ee124abc42bb9e7))
+
+
+
+# [1.6.0](https://github.com/grafana/profiles-drilldown/compare/v1.5.0...v1.6.0) (2025-07-29)
+
+
+### Features
+
+* **GitHub:** Allow providing GitHub integration details manually ([#538](https://github.com/grafana/profiles-drilldown/issues/538)) ([70a61be](https://github.com/grafana/profiles-drilldown/commit/70a61be46936daa7b354d2671538bb2bc6c55c76))
+
+
+
+# [1.5.0](https://github.com/grafana/profiles-drilldown/compare/v1.4.1...v1.5.0) (2025-07-10)
+
+
+### Features
+
+* **GitHub Integration:** Keep GitHub auth cookie within the same session if the data source doesn't change ([#535](https://github.com/grafana/profiles-drilldown/issues/535)) ([8a7b157](https://github.com/grafana/profiles-drilldown/commit/8a7b15791906ce4218a3a4ebf43969039b529727))
+* **Metrics from Profiles:** Allow creating recording rules for all services ([#525](https://github.com/grafana/profiles-drilldown/issues/525)) ([837393b](https://github.com/grafana/profiles-drilldown/commit/837393b8d8ef41d50528722b03071c16ebc027fa))
+* **metrics:** Show annotations ([#522](https://github.com/grafana/profiles-drilldown/issues/522)) ([5259b0b](https://github.com/grafana/profiles-drilldown/commit/5259b0b449bd37e18e1d406bc988a44f7f7dc709))
+
+
+
+## [1.4.1](https://github.com/grafana/profiles-drilldown/compare/v1.4.0...v1.4.1) (2025-05-21)
+
+
+### Features
+
+* **GitHub Integration:** Add a github callback view ([#495](https://github.com/grafana/profiles-drilldown/issues/495)) ([012a0e6](https://github.com/grafana/profiles-drilldown/commit/012a0e6a775fd3af777ccae5c538e73bd83d4833))
+
+
+
+# [1.4.0](https://github.com/grafana/profiles-drilldown/compare/v1.3.0...v1.4.0) (2025-05-15)
+
+
+### Features
+
+* Add extension point to add additional settings ([#478](https://github.com/grafana/profiles-drilldown/issues/478)) ([4ff758f](https://github.com/grafana/profiles-drilldown/commit/4ff758f4b2d0a458da647b663b2488140a0c0b63))
+
+
+
+# [1.3.0](https://github.com/grafana/explore-profiles/compare/v1.2.3...v1.3.0) (2025-04-16)
+
+
+### Bug Fixes
+
+* Cascader options break when services have multiple levels with matching prefix ([#484](https://github.com/grafana/explore-profiles/issues/484)) ([2bb6034](https://github.com/grafana/explore-profiles/commit/2bb603464a329bec9b6da2c26ca0c30a2ef6f45e))
+* **Settings:** Reload settings when data source changes ([#474](https://github.com/grafana/explore-profiles/issues/474)) ([23d814b](https://github.com/grafana/explore-profiles/commit/23d814be30fc8cf050024e556c132785d24a196c))
+
+
+### Features
+
+* **CI:** Append SHA to version number when releasing from main ([#455](https://github.com/grafana/explore-profiles/issues/455)) ([03e6158](https://github.com/grafana/explore-profiles/commit/03e6158377a87b6494ac39a9764296dd2de19a01))
+* **Metrics:** Basic UI for experimental metrics from profiles ([#462](https://github.com/grafana/explore-profiles/issues/462)) ([1500a59](https://github.com/grafana/explore-profiles/commit/1500a59e6daeb097576449273e2dc3da47f8f311))
+
+
+
+## [1.2.3](https://github.com/grafana/explore-profiles/compare/v1.2.2...v1.2.3) (2025-04-03)
+
+
+### Bug Fixes
+
+* Get suggestions for optimize code ([#480](https://github.com/grafana/explore-profiles/issues/480)) ([23674c3](https://github.com/grafana/explore-profiles/commit/23674c3eaf8adf5572a725bade08f0a53038e77b))
+
+
+
+## [1.2.2](https://github.com/grafana/explore-profiles/compare/v1.2.1...v1.2.2) (2025-04-03)
+
+
+### Bug Fixes
+
+* revert "profiling insights" extension ([#447](https://github.com/grafana/explore-profiles/issues/447)) ([43b35dc](https://github.com/grafana/explore-profiles/commit/43b35dc8f929e922bb8d554b92c6a763581d3443))
+
+
+
+## [1.2.1](https://github.com/grafana/explore-profiles/compare/v1.2.0...v1.2.1) (2025-04-02)
+
+
+### Bug Fixes
+
+* **FlameGraph:** Use entire file as context in "Optimize Code" prompt ([#459](https://github.com/grafana/explore-profiles/issues/459)) ([569c17c](https://github.com/grafana/explore-profiles/commit/569c17c41511167add7a7a4db3f90cbc88897d68))
+* **llm:** Add extra context in AI prompt about other lines in a file ([#460](https://github.com/grafana/explore-profiles/issues/460)) ([004b7aa](https://github.com/grafana/explore-profiles/commit/004b7aa04a136b02f036c0e33a27d1b333cbbf93))
+
+
+### Features
+
+* "profiling insights" extension ([#447](https://github.com/grafana/explore-profiles/issues/447)) ([13ff552](https://github.com/grafana/explore-profiles/commit/13ff552083cc4555aa21e8401be1516a364b8271))
+
+
+
 # [1.2.0](https://github.com/grafana/explore-profiles/compare/v1.1.0...v1.2.0) (2025-03-10)
 
 
