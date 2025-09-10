@@ -28,16 +28,21 @@ services:
       postgres:
         condition: service_healthy
 
-  auth-generator:
-    image: artyomyatsenko/final-task-auth-generator:latest
+  auth:
+    build:
+      context: .
+      dockerfile: ./deployment/local/Dockerfile
+      args:
+        - BUILD_TARGET=./auth/cmd/auth/main.go
+    volumes:
+      - ./deployment/local:/deployment/local
     ports:
-      - "8082:8080"
-    environment:
-      AUTH_TOKEN_LIFETIME: 2
+      - "9200:8080"
+    command: ["--config=/deployment/local/auth-local-config.yaml"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
-      interval: 1s
-      timeout: 1s
+      interval: 2s
+      timeout: 2s
       retries: 5
 
   cron:
@@ -79,6 +84,9 @@ services:
       - ./deployment/local:/deployment/local
     ports:
       - "8080:8080"
+    depends_on:
+      auth:
+        condition: service_healthy
     command: ["--config=/deployment/local/gateway-local-config.yaml"]
 
   prometheus:

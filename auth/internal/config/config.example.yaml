@@ -1,0 +1,5 @@
+service:
+  server_port: ":8090"
+
+jwt:
+  jwt_secret: "secret"

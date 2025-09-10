@@ -1,0 +1,6 @@
+service:
+  server_port: ":8080"
+
+jwt:
+  jwt_secret: "secret"
+  jwt_lifetime_seconds: 120
