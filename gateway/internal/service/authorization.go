@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/vctrl/currency-service/gateway/internal/clients/auth"
 	"github.com/vctrl/currency-service/gateway/internal/dto"
 	"github.com/vctrl/currency-service/gateway/internal/password"
 	"github.com/vctrl/currency-service/gateway/internal/repository"
@@ -33,14 +34,14 @@ func NewAuth(authClient authClientInterface, userRepo repository.UserRepository,
 	}
 }
 
-func (s *AuthService) Register(req dto.RegisterRequest) error {
+func (s *AuthService) Register(ctx context.Context, req dto.RegisterRequest) error {
 	protectedPassword, err := s.passwordManager.CreatePassword(req.Password)
 	if err != nil {
 		return err
 	}
 
 	user := repository.User{Login: req.Username, Password: protectedPassword}
-	if err := s.userRepo.AddUser(user); err != nil {
+	if err := s.userRepo.AddUser(ctx, user); err != nil {
 		return fmt.Errorf("userRepo.AddUser: %w", err)
 	}
 
@@ -54,7 +55,7 @@ func (s *AuthService) Login(ctx context.Context, login, password string) (string
 	}
 
 	if err := s.passwordManager.VerifyPassword(password, user.Password); err != nil {
-		return "", ErrInvalidCredentials
+		return "", auth.ErrInvalidCredentials
 	}
 
 	res, err := s.authClient.GenerateToken(ctx, login)

@@ -18,19 +18,19 @@ type User struct {
 	Password password.ProtectedPassword
 }
 
-type UserRepository struct {
+type MapUserRepository struct {
 	users map[string]User
 	mu    *sync.RWMutex
 }
 
-func NewUser() UserRepository {
-	return UserRepository{
+func NewUser() *MapUserRepository {
+	return &MapUserRepository{
 		users: make(map[string]User),
 		mu:    &sync.RWMutex{},
 	}
 }
 
-func (repo *UserRepository) AddUser(user User) error {
+func (repo *MapUserRepository) AddUser(_ context.Context, user User) error {
 	repo.mu.Lock()
 	defer repo.mu.Unlock()
 
@@ -42,7 +42,7 @@ func (repo *UserRepository) AddUser(user User) error {
 	return nil
 }
 
-func (repo *UserRepository) GetUser(_ context.Context, login string) (User, error) {
+func (repo *MapUserRepository) GetUser(_ context.Context, login string) (User, error) {
 	repo.mu.RLock()
 	defer repo.mu.RUnlock()
 

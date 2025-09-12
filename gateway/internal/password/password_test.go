@@ -95,7 +95,8 @@ func TestUserPasswordManager_CreatePassword(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			passwordManager := NewUserPasswordManager(tt.policy)
+			passwordManager, err := NewUserPasswordManager(tt.policy)
+			require.NoError(t, err)
 
 			result, err := passwordManager.CreatePassword(tt.password)
 
@@ -129,7 +130,8 @@ func TestUserPasswordManager_VerifyPassword(t *testing.T) {
 		RequiredSymbolsHint:   "",
 	}
 
-	passwordManager := NewUserPasswordManager(policy)
+	passwordManager, err := NewUserPasswordManager(policy)
+	require.NoError(t, err)
 
 	tests := []struct {
 		name             string
@@ -190,7 +192,8 @@ func TestUserPasswordManager_VerifyPassword_InvalidFormat(t *testing.T) {
 		RequiredSymbolsHint:   "",
 	}
 
-	passwordManager := NewUserPasswordManager(policy)
+	passwordManager, err := NewUserPasswordManager(policy)
+	require.NoError(t, err)
 
 	tests := []struct {
 		name              string
@@ -319,9 +322,10 @@ func TestUserPasswordManager_Validate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			passwordManager := NewUserPasswordManager(tt.policy)
+			passwordManager, err := NewUserPasswordManager(tt.policy)
+			require.NoError(t, err)
 
-			err := passwordManager.validate(tt.password)
+			err = passwordManager.validate(tt.password)
 
 			if tt.expectedError {
 				require.Error(t, err)
@@ -362,7 +366,8 @@ func TestNewUserPasswordManager(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			passwordManager := NewUserPasswordManager(tt.policy)
+			passwordManager, err := NewUserPasswordManager(tt.policy)
+			require.NoError(t, err)
 
 			assert.NotNil(t, passwordManager)
 			assert.Equal(t, tt.policy, passwordManager.passwordPolicy)
@@ -386,7 +391,8 @@ func TestUserPasswordManager_CreatePassword_Consistency(t *testing.T) {
 		RequiredSymbolsHint:   "",
 	}
 
-	passwordManager := NewUserPasswordManager(policy)
+	passwordManager, err := NewUserPasswordManager(policy)
+	require.NoError(t, err)
 	password := "testpassword123"
 
 	// Create password twice

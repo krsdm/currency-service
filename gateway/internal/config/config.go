@@ -11,6 +11,7 @@ type Config struct {
 	Auth           AuthConfig     `mapstructure:"auth"`
 	GRPC           GRPCConfig     `mapstructure:"grpc"`
 	PasswordPolicy PasswordPolicy `mapstructure:"password"`
+	Database       DatabaseConfig `mapstructure:"database"`
 }
 
 type ServerConfig struct {
@@ -31,6 +32,14 @@ type PasswordPolicy struct {
 	MaxSize               int    `mapstructure:"max_size"`
 	RequiredSymbolsRegExp string `mapstructure:"required_symbols_regexp"`
 	RequiredSymbolsHint   string `mapstructure:"required_symbols_hint"`
+}
+
+type DatabaseConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	Name     string `mapstructure:"name"`
 }
 
 func LoadConfig(path string) (Config, error) {
