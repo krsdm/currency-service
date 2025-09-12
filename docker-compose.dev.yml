@@ -8,8 +8,11 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
       PGDATA: /data/postgres
+
     ports:
       - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d currency_db"]
       interval: 1s
@@ -24,6 +27,18 @@ services:
       up
     volumes:
       - ./currency/internal/migrations:/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  migrate-gateway:
+    image: migrate/migrate
+    command: >
+      -path /migrations
+      -database postgres://admin:password@postgres:5432/gateway_db?sslmode=disable 
+      up
+    volumes:
+      - ./gateway/internal/migrations:/migrations
     depends_on:
       postgres:
         condition: service_healthy
