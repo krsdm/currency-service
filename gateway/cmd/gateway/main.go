@@ -16,6 +16,7 @@ import (
 	"github.com/vctrl/currency-service/gateway/internal/config"
 	"github.com/vctrl/currency-service/gateway/internal/handler"
 	"github.com/vctrl/currency-service/gateway/internal/middleware"
+	"github.com/vctrl/currency-service/gateway/internal/password"
 	"github.com/vctrl/currency-service/gateway/internal/repository"
 	"github.com/vctrl/currency-service/gateway/internal/service"
 	"github.com/vctrl/currency-service/pkg/grpc_client"
@@ -88,7 +89,8 @@ func run() error {
 	*/
 
 	userRepo := repository.NewUser()
-	authService := service.NewAuth(authClient, userRepo)
+	passwordManager := password.NewUserPasswordManager(cfg.PasswordPolicy)
+	authService := service.NewAuth(authClient, userRepo, passwordManager)
 	currencyService := service.NewCurrency(currencyClient)
 
 	srv := &http.Server{
