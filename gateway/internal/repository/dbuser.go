@@ -23,8 +23,12 @@ func NewUserRepository(db *sql.DB) *DBUserRepository {
 }
 
 func (r *DBUserRepository) AddUser(ctx context.Context, user User) error {
+	existing, err := r.GetUser(ctx, user.Login)
+	if err == nil && existing.Login == user.Login {
+		return ErrUserAlreadyExist
+	}
 	query := `insert into users(login, password_hash) values ($1, $2)`
-	_, err := r.db.ExecContext(ctx, query, user.Login, user.Password.String())
+	_, err = r.db.ExecContext(ctx, query, user.Login, user.Password.String())
 	if err != nil {
 		return fmt.Errorf("failed to save user: %w", err)
 	}
