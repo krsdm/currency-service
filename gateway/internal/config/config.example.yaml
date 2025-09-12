@@ -6,3 +6,10 @@ auth:
 
 grpc:
   currency_service_url: "localhost:8090"
+
+password:
+  global_salt: changeit
+  min_size: 6
+  max_size: 20
+  required_symbols_regexp: "`^(?=.*[a-zA-Z])(?=.*\\d).*$`"
+  required_symbols_hint: "password must contain latin letters and digits"

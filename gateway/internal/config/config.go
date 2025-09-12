@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	Server ServerConfig `mapstructure:"server"`
-	Auth   AuthConfig   `mapstructure:"auth"`
-	GRPC   GRPCConfig   `mapstructure:"grpc"`
+	Server         ServerConfig   `mapstructure:"server"`
+	Auth           AuthConfig     `mapstructure:"auth"`
+	GRPC           GRPCConfig     `mapstructure:"grpc"`
+	PasswordPolicy PasswordPolicy `mapstructure:"password"`
 }
 
 type ServerConfig struct {
@@ -22,6 +23,14 @@ type AuthConfig struct {
 
 type GRPCConfig struct {
 	CurrencyServiceURL string `mapstructure:"currency_service_url"`
+}
+
+type PasswordPolicy struct {
+	GlobalSalt            string `mapstructure:"global_salt"`
+	MinSize               int    `mapstructure:"min_size"`
+	MaxSize               int    `mapstructure:"max_size"`
+	RequiredSymbolsRegExp string `mapstructure:"required_symbols_regexp"`
+	RequiredSymbolsHint   string `mapstructure:"required_symbols_hint"`
 }
 
 func LoadConfig(path string) (Config, error) {

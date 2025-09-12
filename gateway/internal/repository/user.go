@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"sync"
+
+	"github.com/vctrl/currency-service/gateway/internal/password"
 )
 
 var (
@@ -13,7 +15,7 @@ var (
 
 type User struct {
 	Login    string
-	Password string
+	Password password.ProtectedPassword
 }
 
 type UserRepository struct {

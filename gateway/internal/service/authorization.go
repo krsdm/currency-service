@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/vctrl/currency-service/gateway/internal/dto"
+	"github.com/vctrl/currency-service/gateway/internal/password"
 	"github.com/vctrl/currency-service/gateway/internal/repository"
 )
 
@@ -19,19 +20,26 @@ type authClientInterface interface {
 }
 
 type AuthService struct {
-	authClient authClientInterface
-	userRepo   repository.UserRepository // todo interface
+	authClient      authClientInterface
+	userRepo        repository.UserRepository // todo interface
+	passwordManager password.ProtectedPasswordManager
 }
 
-func NewAuth(authClient authClientInterface, userRepo repository.UserRepository) AuthService {
+func NewAuth(authClient authClientInterface, userRepo repository.UserRepository, passwordManager password.ProtectedPasswordManager) AuthService {
 	return AuthService{
-		authClient: authClient,
-		userRepo:   userRepo,
+		authClient:      authClient,
+		userRepo:        userRepo,
+		passwordManager: passwordManager,
 	}
 }
 
 func (s *AuthService) Register(req dto.RegisterRequest) error {
-	user := repository.User{Login: req.Username, Password: req.Password}
+	protectedPassword, err := s.passwordManager.CreatePassword(req.Password)
+	if err != nil {
+		return err
+	}
+
+	user := repository.User{Login: req.Username, Password: protectedPassword}
 	if err := s.userRepo.AddUser(user); err != nil {
 		return fmt.Errorf("userRepo.AddUser: %w", err)
 	}
@@ -45,7 +53,7 @@ func (s *AuthService) Login(ctx context.Context, login, password string) (string
 		return "", fmt.Errorf("userRepo.GetUser: %w", err)
 	}
 
-	if user.Password != password {
+	if err := s.passwordManager.VerifyPassword(password, user.Password); err != nil {
 		return "", ErrInvalidCredentials
 	}
 
