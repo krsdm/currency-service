@@ -35,16 +35,17 @@ type UserPasswordManager struct {
 	requiredSymbolsCheck *regexp.Regexp
 }
 
-func NewUserPasswordManager(passwordPolicy config.PasswordPolicy) *UserPasswordManager {
-	var requiredSymbolsCheck *regexp.Regexp
+func NewUserPasswordManager(passwordPolicy config.PasswordPolicy) (*UserPasswordManager, error) {
+	passwordManager := UserPasswordManager{passwordPolicy: passwordPolicy}
 	if passwordPolicy.RequiredSymbolsRegExp != "" {
-		requiredSymbolsCheck = regexp.MustCompile(passwordPolicy.RequiredSymbolsRegExp)
+		requiredSymbolsCheck, err := regexp.Compile(passwordPolicy.RequiredSymbolsRegExp)
+		if err != nil {
+			return nil, err
+		}
+		passwordManager.requiredSymbolsCheck = requiredSymbolsCheck
 	}
 
-	return &UserPasswordManager{
-		passwordPolicy:       passwordPolicy,
-		requiredSymbolsCheck: requiredSymbolsCheck,
-	}
+	return &passwordManager, nil
 }
 
 func (m *UserPasswordManager) CreatePassword(planTextPassword string) (ProtectedPassword, error) {

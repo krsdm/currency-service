@@ -21,7 +21,7 @@ func (s *controller) Register(c *gin.Context) {
 		return
 	}
 
-	err = s.authService.Register(dto.RegisterRequest(req))
+	err = s.authService.Register(c.Request.Context(), dto.RegisterRequest(req))
 	if err != nil {
 		s.handleError(c, err)
 		return
