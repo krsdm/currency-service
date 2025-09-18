@@ -64,3 +64,17 @@ func (mr *MockCurrencyServiceMockRecorder) GetCurrencyRatesInInterval(ctx, reqDT
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrencyRatesInInterval", reflect.TypeOf((*MockCurrencyService)(nil).GetCurrencyRatesInInterval), ctx, reqDTO)
 }
+
+// UpdateCurrencyRate mocks base method.
+func (m *MockCurrencyService) UpdateCurrencyRate(ctx context.Context, reqDTO *dto.UpdateCurrencyRequestDTO) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCurrencyRate", ctx, reqDTO)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateCurrencyRate indicates an expected call of UpdateCurrencyRate.
+func (mr *MockCurrencyServiceMockRecorder) UpdateCurrencyRate(ctx, reqDTO interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCurrencyRate", reflect.TypeOf((*MockCurrencyService)(nil).UpdateCurrencyRate), ctx, reqDTO)
+}

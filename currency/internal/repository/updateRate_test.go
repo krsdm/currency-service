@@ -17,7 +17,7 @@ import (
 type UpdateRateSuit struct {
 	suite.Suite
 	pgContainer *postgres.PostgresContainer
-	repo        Currency
+	repo        CurrencyRepository
 }
 
 func TestUpdateRateSuit(t *testing.T) {
@@ -52,16 +52,18 @@ func (s *UpdateRateSuit) TearDownSuite() {
 }
 
 func (s *UpdateRateSuit) SetupTest() {
-	err := s.repo.Save(context.Background(), time.Now(), "RUB", map[string]float64{"usd": 10.10})
+	rates := map[string]float64{"usd": 10.10, "eur": 9.10}
+	err := s.repo.Save(context.Background(), time.Now(), "RUB", rates)
 	s.Require().NoError(err)
 }
 
-func (s *UpdateRateSuit) TestUpdateRete() {
+func (s *UpdateRateSuit) TestUpdateRate() {
 	var newRate float32 = 11.11
+	today := time.Now()
 	updateDTO := &dto.UpdateCurrencyRequestDTO{
 		BaseCurrency:   "RUB",
-		TargetCurrency: "USD",
-		RateRecord:     dto.RateRecordDTO{Date: time.Now(), Rate: newRate},
+		TargetCurrency: "usd",
+		RateRecord:     dto.RateRecordDTO{Date: today, Rate: newRate},
 	}
 	affectedRowCount, err := s.repo.UpdateRate(context.Background(), updateDTO)
 	s.Require().NoError(err)
@@ -69,10 +71,11 @@ func (s *UpdateRateSuit) TestUpdateRete() {
 
 	rates, err := s.repo.FindInInterval(context.Background(), &dto.CurrencyRequestDTO{
 		BaseCurrency:   "RUB",
-		TargetCurrency: "USD",
-		DateFrom:       time.Now(),
-		DateTo:         time.Now(),
+		TargetCurrency: "usd",
+		DateFrom:       today,
+		DateTo:         today,
 	})
 	s.Require().NoError(err)
+	s.Require().Len(rates, 1)
 	s.EqualValues(newRate, rates[0].Rate)
 }
