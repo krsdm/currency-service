@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/vctrl/currency-service/currency/internal/dto"
 
 	_ "github.com/lib/pq"
@@ -89,4 +90,32 @@ func (repo *Currency) FindInInterval(
 	}
 
 	return rates, nil
+}
+
+func (repo *Currency) UpdateRate(ctx context.Context, dto *dto.UpdateCurrencyRequestDTO) (int64, error) {
+	query := `
+		UPDATE exchange_rates
+		SET currency_rates = jsonb_set(currency_rates, $1, to_jsonb($2::numeric), true)
+		WHERE date::date = $3 AND base_currency = $4;
+	`
+
+	result, err := repo.DB.ExecContext(
+		ctx,
+		query,
+		pq.Array([]string{dto.TargetCurrency}),
+		dto.RateRecord.Rate,
+		dto.RateRecord.Date,
+		dto.BaseCurrency,
+	)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to update exchange rate: %w", err)
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

@@ -15,6 +15,12 @@ type CurrencyRequestDTO struct {
 	DateTo         time.Time
 }
 
+type UpdateCurrencyRequestDTO struct {
+	BaseCurrency   string
+	TargetCurrency string
+	RateRecord     RateRecordDTO
+}
+
 type CurrencyResponseDTO struct {
 	Currency string
 	Rates    []RateRecordDTO
