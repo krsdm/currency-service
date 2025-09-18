@@ -7,6 +7,7 @@ import (
 
 	"github.com/vctrl/currency-service/currency/internal/dto"
 	"github.com/vctrl/currency-service/pkg/currency"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -35,4 +36,14 @@ func (s CurrencyServer) GetRate(ctx context.Context, request *currency.GetRateRe
 		Currency: reqDTO.TargetCurrency,
 		Rates:    rateRecords,
 	}, nil
+}
+
+func (s CurrencyServer) UpdateRate(ctx context.Context, request *currency.UpdateRateRequest) (*emptypb.Empty, error) {
+	reqDto := dto.UpdateCurrencyRequestDTOFromProtobuf(request, dto.DefaultBaseCurrency)
+	err := s.service.UpdateCurrencyRate(ctx, reqDto)
+	if err != nil {
+		return nil, fmt.Errorf("service.UpdateRate: %w", err)
+	}
+
+	return &emptypb.Empty{}, nil
 }

@@ -60,3 +60,14 @@ func (dto *CurrencyResponseDTO) ToProtobuf() *currency.GetRateResponse {
 		Rates:    rateRecords,
 	}
 }
+
+func UpdateCurrencyRequestDTOFromProtobuf(req *currency.UpdateRateRequest, baseCurrency string) *UpdateCurrencyRequestDTO {
+	return &UpdateCurrencyRequestDTO{
+		BaseCurrency:   baseCurrency,
+		TargetCurrency: req.Currency,
+		RateRecord: RateRecordDTO{
+			Date: req.RateRecord.Date.AsTime(),
+			Rate: req.RateRecord.Rate,
+		},
+	}
+}

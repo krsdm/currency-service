@@ -59,3 +59,19 @@ func (s *Currency) FetchAndSaveCurrencyRates(ctx context.Context, baseCurrency s
 	s.logger.Info("Currency rates fetched and saved", zap.Any("rates", rates))
 	return nil
 }
+
+func (s *Currency) UpdateCurrencyRate(ctx context.Context, reqDTO *dto.UpdateCurrencyRequestDTO) error {
+	reqDTO.TargetCurrency = strings.ToLower(reqDTO.TargetCurrency)
+	_, err := s.currencyRepo.UpdateRate(ctx, reqDTO)
+	if err != nil {
+		return fmt.Errorf("failed to update currency rate: %w", err)
+	}
+
+	s.logger.Info(
+		"Currency rate updated",
+		zap.Any("currency", reqDTO.BaseCurrency+reqDTO.TargetCurrency),
+		zap.Any("rate", reqDTO.RateRecord),
+	)
+
+	return nil
+}

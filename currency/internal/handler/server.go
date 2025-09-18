@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vctrl/currency-service/currency/internal/dto"
 	"github.com/vctrl/currency-service/currency/internal/repository"
@@ -14,6 +15,7 @@ import (
 type CurrencyService interface {
 	GetCurrencyRatesInInterval(ctx context.Context, reqDTO *dto.CurrencyRequestDTO) ([]repository.CurrencyRate, error)
 	FetchAndSaveCurrencyRates(ctx context.Context, baseCurrency string) error
+	UpdateCurrencyRate(ctx context.Context, reqDTO *dto.UpdateCurrencyRequestDTO) error
 }
 
 // todo tests
