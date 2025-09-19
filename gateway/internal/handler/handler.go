@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/vctrl/currency-service/gateway/internal/service"
 
@@ -16,18 +17,21 @@ type controller struct {
 	currencyService service.CurrencyService
 	router          *gin.Engine
 	logger          *zap.Logger
+	failedLogin     *prometheus.CounterVec
 }
 
 func RegisterRoutes(authSvc service.AuthService,
 	currencySvc service.CurrencyService,
 	router *gin.Engine,
-	logger *zap.Logger) controller {
+	logger *zap.Logger,
+	failedLogin *prometheus.CounterVec) controller {
 
 	cntrl := controller{
 		authService:     authSvc,
 		currencyService: currencySvc,
 		router:          router,
 		logger:          logger,
+		failedLogin:     failedLogin,
 	}
 
 	cntrl.router.GET(
@@ -36,11 +40,7 @@ func RegisterRoutes(authSvc service.AuthService,
 		},
 	)
 
-	cntrl.router.GET("/metrics", func(c *gin.Context) {
-		promhttp.Handler()
-	},
-	)
-
+	cntrl.router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	cntrl.router.GET("/api/v1/rate", cntrl.GetCurrencyRates)
 	cntrl.router.PATCH("/api/v1/rate", cntrl.UpdateCurrencyRate)
 	cntrl.router.POST("/api/v1/login", cntrl.Login)

@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vctrl/currency-service/gateway/internal/clients/auth"
 	"github.com/vctrl/currency-service/gateway/internal/config"
 	"github.com/vctrl/currency-service/gateway/internal/db"
@@ -26,6 +27,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
+
+var (
+	failedAuthCount = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "failed_auth_total",
+			Help: "Total number of failed login attempts",
+		},
+		[]string{"user"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(failedAuthCount)
+}
 
 func main() {
 	if err := run(); err != nil {
@@ -108,7 +123,7 @@ func run() error {
 		Handler: router,
 	}
 
-	handler.RegisterRoutes(authService, currencyService, router, logger)
+	handler.RegisterRoutes(authService, currencyService, router, logger, failedAuthCount)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
