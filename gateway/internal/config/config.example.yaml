@@ -6,3 +6,17 @@ auth:
 
 grpc:
   currency_service_url: "localhost:8090"
+
+password:
+  global_salt: changeit
+  min_size: 6
+  max_size: 20
+  required_symbols_regexp: "([A-Za-z].*\\d|\\d.*[A-Za-z])"
+  required_symbols_hint: "password must contain latin letters and digits"
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "admin"
+  password: "password"
+  name: "gateway_db"

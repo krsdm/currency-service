@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vctrl/currency-service/gateway/internal/clients/auth"
 	innnerErrors "github.com/vctrl/currency-service/gateway/internal/errors"
+	"github.com/vctrl/currency-service/gateway/internal/password"
 	"github.com/vctrl/currency-service/gateway/internal/repository"
 )
 
@@ -40,6 +41,12 @@ func (s *controller) handleError(c *gin.Context, err error) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Token not found"})
 	case errors.Is(err, auth.ErrInvalidOrExpiredToken):
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token is invalid or expired"})
+	case errors.Is(err, password.ErrShortPassword),
+		errors.Is(err, password.ErrLongPassword),
+		errors.Is(err, password.ErrInvalidPassword):
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	case errors.As(err, &password.ErrRequiredSymbols{}):
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	default:
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 	}

@@ -14,8 +14,10 @@ import (
 
 	"github.com/vctrl/currency-service/gateway/internal/clients/auth"
 	"github.com/vctrl/currency-service/gateway/internal/config"
+	"github.com/vctrl/currency-service/gateway/internal/db"
 	"github.com/vctrl/currency-service/gateway/internal/handler"
 	"github.com/vctrl/currency-service/gateway/internal/middleware"
+	"github.com/vctrl/currency-service/gateway/internal/password"
 	"github.com/vctrl/currency-service/gateway/internal/repository"
 	"github.com/vctrl/currency-service/gateway/internal/service"
 	"github.com/vctrl/currency-service/pkg/grpc_client"
@@ -81,14 +83,24 @@ func run() error {
 		}
 	}()
 
-	/*
-		userRepo := user.NewRepository()
-		authService := auuth.NewService(authClient, userRepo)
-		currencyService := currency.NewService(currencyClient)
-	*/
+	connection, _, err := db.NewDatabaseConnection(cfg.Database)
+	defer func() {
+		if connection != nil {
+			if err := connection.Close(); err != nil {
+				logger.Warn("error closing database connection", zap.Error(err))
+			}
+		}
+	}()
+	if err != nil {
+		log.Fatalf("error init database connection: %v", err)
+	}
 
-	userRepo := repository.NewUser()
-	authService := service.NewAuth(authClient, userRepo)
+	passwordManager, err := password.NewUserPasswordManager(cfg.PasswordPolicy)
+	if err != nil {
+		return fmt.Errorf("error creating UserPasswordManager: %w", err)
+	}
+	userRepo := repository.NewUserRepository(connection)
+	authService := service.NewAuth(authClient, userRepo, passwordManager)
 	currencyService := service.NewCurrency(currencyClient)
 
 	srv := &http.Server{
