@@ -40,11 +40,13 @@ func (s *controller) Login(c *gin.Context) {
 	err := c.BindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		s.failedLogin.WithLabelValues(req.Username).Inc()
 		return
 	}
 
 	token, err := s.authService.Login(c.Request.Context(), req.Username, req.Password)
 	if err != nil {
+		s.failedLogin.WithLabelValues(req.Username).Inc()
 		s.handleError(c, err)
 		return
 	}
