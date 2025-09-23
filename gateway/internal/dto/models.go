@@ -33,3 +33,9 @@ type LoginRequest struct {
 
 type LoginResponse struct {
 }
+
+type ParsedUpdateRateRequest struct {
+	Currency string
+	Rate     float32
+	Date     time.Time
+}

@@ -42,6 +42,7 @@ func RegisterRoutes(authSvc service.AuthService,
 	)
 
 	cntrl.router.GET("/api/v1/rate", cntrl.GetCurrencyRates)
+	cntrl.router.PATCH("/api/v1/rate", cntrl.UpdateCurrencyRate)
 	cntrl.router.POST("/api/v1/login", cntrl.Login)
 	cntrl.router.POST("/api/v1/register", cntrl.Register)
 	cntrl.router.POST("/api/v1/logout", cntrl.Logout)

@@ -51,3 +51,20 @@ func (svc *CurrencyService) GetCurrencyRates(
 	}
 	return resp, nil
 }
+
+func (svc *CurrencyService) UpdateCurrencyRate(ctx context.Context, request dto.ParsedUpdateRateRequest) error {
+	pbRequest := &currency.UpdateRateRequest{
+		Currency: request.Currency,
+		RateRecord: &currency.RateRecord{
+			Date: timestamppb.New(request.Date),
+			Rate: request.Rate,
+		},
+	}
+
+	_, err := svc.currencyClient.UpdateRate(ctx, pbRequest)
+	if err != nil {
+		return fmt.Errorf("currencyClient.UpdateCurrencyRate: %s", err)
+	}
+
+	return nil
+}

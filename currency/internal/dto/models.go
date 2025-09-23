@@ -15,6 +15,12 @@ type CurrencyRequestDTO struct {
 	DateTo         time.Time
 }
 
+type UpdateCurrencyRequestDTO struct {
+	BaseCurrency   string
+	TargetCurrency string
+	RateRecord     RateRecordDTO
+}
+
 type CurrencyResponseDTO struct {
 	Currency string
 	Rates    []RateRecordDTO
@@ -52,5 +58,16 @@ func (dto *CurrencyResponseDTO) ToProtobuf() *currency.GetRateResponse {
 	return &currency.GetRateResponse{
 		Currency: dto.Currency,
 		Rates:    rateRecords,
+	}
+}
+
+func UpdateCurrencyRequestDTOFromProtobuf(req *currency.UpdateRateRequest, baseCurrency string) *UpdateCurrencyRequestDTO {
+	return &UpdateCurrencyRequestDTO{
+		BaseCurrency:   baseCurrency,
+		TargetCurrency: req.Currency,
+		RateRecord: RateRecordDTO{
+			Date: req.RateRecord.Date.AsTime(),
+			Rate: req.RateRecord.Rate,
+		},
 	}
 }

@@ -17,6 +17,12 @@ type currencyRequest struct {
 	DateTo   string `form:"date_to" binding:"required,datetime=2006-01-02"`
 }
 
+type updateRateRequest struct {
+	Currency string  `form:"currency" binding:"required"`
+	Rate     float32 `form:"rate" binding:"required"`
+	Date     string  `form:"date" binding:"required,datetime=2006-01-02"`
+}
+
 func (s *controller) GetCurrencyRates(c *gin.Context) {
 	var req currencyRequest
 	err := c.BindQuery(&req)
@@ -51,4 +57,33 @@ func (s *controller) GetCurrencyRates(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, data)
+}
+
+func (s *controller) UpdateCurrencyRate(c *gin.Context) {
+	var req updateRateRequest
+	err := c.BindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	date, err := time.Parse("2006-01-02", req.Date)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid format for date, expected YYYY-MM-DD"})
+		return
+	}
+
+	parsedRequest := dto.ParsedUpdateRateRequest{
+		Currency: req.Currency,
+		Rate:     req.Rate,
+		Date:     date,
+	}
+
+	err = s.currencyService.UpdateCurrencyRate(c.Request.Context(), parsedRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusOK)
 }

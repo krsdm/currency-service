@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 package currency;
 
@@ -8,6 +9,7 @@ option go_package = "pkg/currency";
 
 service CurrencyService {
   rpc GetRate(GetRateRequest) returns (GetRateResponse);
+  rpc UpdateRate(UpdateRateRequest) returns (google.protobuf.Empty);
 }
 
 message GetRateRequest {
@@ -24,6 +26,11 @@ message GetRateResponse {
 message RateRecord {
   google.protobuf.Timestamp date = 1;
   float rate = 2;
+}
+
+message UpdateRateRequest {
+  string currency = 1;
+  RateRecord rateRecord = 2;
 }
 
 // Тип decimal

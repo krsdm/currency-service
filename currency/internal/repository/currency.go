@@ -7,10 +7,18 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/vctrl/currency-service/currency/internal/dto"
 
 	_ "github.com/lib/pq"
 )
+
+//go:generate mockgen -source=currency.go -destination=mocks/mock_currency_repository.go -package=mocks CurrencyRepository
+type CurrencyRepository interface {
+	Save(ctx context.Context, date time.Time, baseCurrency string, rates map[string]float64) error
+	FindInInterval(ctx context.Context, dto *dto.CurrencyRequestDTO) ([]CurrencyRate, error)
+	UpdateRate(ctx context.Context, dto *dto.UpdateCurrencyRequestDTO) (int64, error)
+}
 
 type Currency struct {
 	DB *sql.DB
@@ -21,8 +29,8 @@ type CurrencyRate struct {
 	Rate float32
 }
 
-func NewCurrency(db *sql.DB) (Currency, error) {
-	return Currency{
+func NewCurrency(db *sql.DB) (*Currency, error) {
+	return &Currency{
 		DB: db,
 	}, nil
 }
@@ -89,4 +97,32 @@ func (repo *Currency) FindInInterval(
 	}
 
 	return rates, nil
+}
+
+func (repo *Currency) UpdateRate(ctx context.Context, dto *dto.UpdateCurrencyRequestDTO) (int64, error) {
+	query := `
+		UPDATE exchange_rates
+		SET currency_rates = jsonb_set(currency_rates, $1, to_jsonb($2::numeric), true)
+		WHERE date::date = $3::date AND base_currency = $4;
+	`
+
+	result, err := repo.DB.ExecContext(
+		ctx,
+		query,
+		pq.Array([]string{dto.TargetCurrency}),
+		dto.RateRecord.Rate,
+		dto.RateRecord.Date.Format("2006-01-02"),
+		dto.BaseCurrency,
+	)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to update exchange rate: %w", err)
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

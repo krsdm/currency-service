@@ -14,13 +14,13 @@ import (
 )
 
 type Currency struct {
-	currencyRepo repository.Currency
+	currencyRepo repository.CurrencyRepository
 	client       currency.Currency
 	logger       *zap.Logger
 }
 
 func NewCurrency(
-	repo repository.Currency,
+	repo repository.CurrencyRepository,
 	client currency.Currency,
 	logger *zap.Logger,
 ) Currency {
@@ -57,5 +57,29 @@ func (s *Currency) FetchAndSaveCurrencyRates(ctx context.Context, baseCurrency s
 	}
 
 	s.logger.Info("Currency rates fetched and saved", zap.Any("rates", rates))
+	return nil
+}
+
+func (s *Currency) UpdateCurrencyRate(ctx context.Context, reqDTO *dto.UpdateCurrencyRequestDTO) error {
+	if reqDTO.TargetCurrency == "" {
+		return fmt.Errorf("TargetCurrency is required")
+	}
+
+	if reqDTO.RateRecord.Rate < 0 {
+		return fmt.Errorf("invalid RateRecord")
+	}
+
+	reqDTO.TargetCurrency = strings.ToLower(reqDTO.TargetCurrency)
+	_, err := s.currencyRepo.UpdateRate(ctx, reqDTO)
+	if err != nil {
+		return fmt.Errorf("failed to update currency rate: %w", err)
+	}
+
+	s.logger.Info(
+		"Currency rate updated",
+		zap.Any("currency", reqDTO.BaseCurrency+reqDTO.TargetCurrency),
+		zap.Any("rate", reqDTO.RateRecord),
+	)
+
 	return nil
 }
